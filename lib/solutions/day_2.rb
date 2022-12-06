@@ -5,38 +5,39 @@ module Solutions
     include Runner
 
     # A for Rock, B for Paper, and C for Scissors
-    # X for Rock, Y for Paper, and Z for Scissors
 
-    DRAW_MAP = {
-      'A' => 'X',
-      'B' => 'Y',
-      'C' => 'Z'
-    }.freeze
     WIN_MAP = {
-      'A' => 'Y',
-      'B' => 'Z',
-      'C' => 'X'
+      'A' => 'B',
+      'B' => 'C',
+      'C' => 'A'
+    }.freeze
+    LOSE_MAP = {
+      'B' => 'A',
+      'C' => 'B',
+      'A' => 'C'
     }.freeze
     SHAPE_POINTS = {
-      'X' => 1,
-      'Y' => 2,
-      'Z' => 3
+      'A' => 1,
+      'B' => 2,
+      'C' => 3
     }.freeze
-    LOST = 0
     DRAW = 3
     WIN = 6
 
     def run
       raw_input.reduce(0) do |total, round|
-        oponent, me = round.split
+        oponent, expected_result = round.split
 
-        if DRAW_MAP[oponent] == me
-          total += DRAW
-        elsif WIN_MAP[oponent] == me
-          total += WIN
+        case expected_result
+        when 'X'
+          total += SHAPE_POINTS[LOSE_MAP[oponent]]
+        when 'Y'
+          total += DRAW + SHAPE_POINTS[oponent]
+        when 'Z'
+          total += WIN + SHAPE_POINTS[WIN_MAP[oponent]]
         end
 
-        total += SHAPE_POINTS[me]
+        total
       end
     end
   end
