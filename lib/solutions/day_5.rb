@@ -19,7 +19,7 @@ module Solutions
       raw_input[divider+1..].each do |action|
         quantity, from, to = action.gsub(/'s|[?&]+|move|from|to/, '').split.map(&:to_i)
 
-        cranes_to_move = stacks[from][0..quantity-1].reverse
+        cranes_to_move = stacks[from][0..quantity-1]
         stacks[from] = stacks[from].drop(quantity)
         stacks[to] = [*cranes_to_move, *stacks[to]]
       end
