@@ -11,8 +11,7 @@ module Solutions
           (a..b).to_a
         end
 
-        overlapping_ranges = (range_a - range_b).empty? || (range_b - range_a).empty?
-        total += 1 if overlapping_ranges
+        total += 1 if range_a.intersection(range_b).any?
 
         total
       end
