@@ -6,7 +6,8 @@ module Solutions
   class Day7
     include Runner
 
-    FOLDER_SIZE_THRESHOLD = 100_000
+    MAX_FILESYSTEM_SIZE = 70_000_000
+    MIN_SIZE_TO_UPDATE = 30_000_000
 
     def run
       root_folder = nil
@@ -39,25 +40,37 @@ module Solutions
         end
       end
 
-      size_below_threshold = []
-      root_folder[:folder_size] = folder_size(root_folder, size_below_threshold)
+      root_folder[:folder_size] = folder_size(root_folder)
+      space_needed = MIN_SIZE_TO_UPDATE - (MAX_FILESYSTEM_SIZE - root_folder[:folder_size])
 
-      size_below_threshold.sum
+      diffs = {}
+      find_folders_diffs(root_folder, space_needed, diffs)
+      diffs.max_by { |(_, value)| value }.first
     end
 
     private
 
-    def folder_size(folder, size_below_threshold)
+    def folder_size(folder)
       return folder[:size] if folder.key?(:size)
 
       size = folder[:child].reduce(0) do |total_size, child|
-        total_size + folder_size(child, size_below_threshold)
+        total_size + folder_size(child)
       end
 
-      size_below_threshold << size if size <= FOLDER_SIZE_THRESHOLD
       folder[:folder_size] = size
 
       size
+    end
+
+    def find_folders_diffs(folder, space_needed, diffs)
+      return if folder.key?(:size)
+
+      diff = (space_needed - folder[:folder_size])
+      diffs[folder[:folder_size]] = diff if diff.negative?
+
+      folder[:child].each do |child|
+        find_folders_diffs(child, space_needed, diffs)
+      end
     end
   end
 end
